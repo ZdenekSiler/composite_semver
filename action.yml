@@ -1,0 +1,100 @@
+name: 'Get BL Package Major Minor Version'
+description: 'Composite action to get BL package major minor version'
+inputs:
+  branch_name:
+    description: 'The branch name to check'
+    required: true
+  debug:
+    description: 'debug mode'
+    required: true
+
+outputs:
+  version:
+    description: 'The version of the BL package'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check Debug Mode
+      id: check_debug
+      shell: bash
+      run: |
+        if [[ "$DEBUG_MODE" == "true" && "$DEBUG_MERGE_CHANGES" == "false" ]]; then
+          echo "version=0.0" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+    - name: Check Branch
+      id: check_branch
+      shell: bash
+      run: |
+        if [[ "$GITHUB_REF_NAME" == "integration" ]]; then
+          echo "version=1.0" >> $GITHUB_OUTPUT
+          exit 0
+        elif [[ "$GITHUB_REF_NAME" == "pre-production" ]]; then
+          echo "version=2.0" >> $GITHUB_OUTPUT
+          exit 0
+        elif [[ "$GITHUB_REF_NAME" == "production" || "$GITHUB_REF_NAME" == "acceptance" ]]; then
+          timestamp=$(date +%Y%m%d%H%M%S)
+          minor=0
+          echo "version=${timestamp}.${minor}" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+    # - name: Check Version Config File
+    #   id: check_file
+    #   shell: bash
+    #   run: |
+    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
+    #     if [[ ! -f "$VERSION_CFG_JSON" ]]; then
+    #       echo "Error: Missing file $VERSION_CFG_JSON" >&2
+    #       exit 1
+    #     fi
+
+    # - name: Read Version Config
+    #   id: read_version
+    #   shell: bash
+    #   run: |
+    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
+    #     readJsonFile=$(cat "$VERSION_CFG_JSON")
+    #     echo "$readJsonFile" > version_content.txt
+
+    # - name: Upload JSON Content
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: version-content
+    #     path: version_content.txt
+
+    # - name: Download JSON Content
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: version-content
+    #     path: .
+
+    # - name: Parse Version Config
+    #   id: parse_version
+    #   shell: bash
+    #   run: |
+    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
+    #     readJsonFile=$(cat version_content.txt)
+    #     major=$(date +%y%m)
+    #     minor=0
+    #     if echo "$readJsonFile" | jq -e '.major' > /dev/null && [[ "$(echo "$readJsonFile" | jq -r '.major')" == "$major" ]]; then
+    #       minor=$(($(echo "$readJsonFile" | jq -r '.minor') + 1))
+    #     fi
+    #     echo "version=${major}.${minor}" >> $GITHUB_OUTPUT
+
+    # - name: Update Version Config
+    #   shell: bash
+    #   run: |
+    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
+    #     major=$(date +%y%m)
+    #     minor=$(echo "$readJsonFile" | jq -r '.minor')
+    #     myJsonValue="{\"major\": \"$major\", \"minor\": $minor}"
+    #     echo "$myJsonValue" > "$VERSION_CFG_JSON"
+
+    # - name: Upload Updated JSON Content
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: updated-version-content
+    #     path: release_BL_pkg_version.json
