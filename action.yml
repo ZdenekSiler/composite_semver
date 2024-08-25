@@ -34,6 +34,7 @@ runs:
         fi
 
     - name: Print out the version
+      shell: bash
       run: |
         echo "Version: ${{ steps.check_branch.outputs.version }}"
           
