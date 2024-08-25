@@ -1,12 +1,9 @@
 name: 'Get BL Package Major Minor Version'
 description: 'Composite action to get BL package major minor version'
 inputs:
-  branch_name:
-    description: 'The branch name to check'
-    required: true
   debug:
     description: 'debug mode'
-    required: true
+    required: false
 
 outputs:
   version:
@@ -19,7 +16,7 @@ runs:
       id: check_debug
       shell: bash
       run: |
-        if [[ "$DEBUG_MODE" == "true" && "$DEBUG_MERGE_CHANGES" == "false" ]]; then
+        if [[ "${{ inputs.debug }}" == "true" ]]; then
           echo "version=0.0" >> $GITHUB_OUTPUT
           exit 0
         fi
@@ -28,16 +25,11 @@ runs:
       id: check_branch
       shell: bash
       run: |
-        if [[ "$GITHUB_REF_NAME" == "integration" ]]; then
+        if [[ "${{ github.ref }}" == "integration" ]]; then
           echo "version=1.0" >> $GITHUB_OUTPUT
           exit 0
-        elif [[ "$GITHUB_REF_NAME" == "pre-production" ]]; then
+        elif [[ "${{ github.ref }}" == "pre-production" ]]; then
           echo "version=2.0" >> $GITHUB_OUTPUT
-          exit 0
-        elif [[ "$GITHUB_REF_NAME" == "production" || "$GITHUB_REF_NAME" == "acceptance" ]]; then
-          timestamp=$(date +%Y%m%d%H%M%S)
-          minor=0
-          echo "version=${timestamp}.${minor}" >> $GITHUB_OUTPUT
           exit 0
         fi
 
