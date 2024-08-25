@@ -52,13 +52,13 @@ runs:
         echo "$readJsonFile" > version_content.txt
 
     - name: Upload JSON Content
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: version-content
         path: version_content.txt
 
     - name: Download JSON Content
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: version-content
         path: .
