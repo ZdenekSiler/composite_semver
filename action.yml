@@ -6,8 +6,10 @@ inputs:
     required: false
 
 outputs:
-  version: step.check_debug.outputs.version
+  version:
     description: 'The version of the BL package'
+    value: ${{ steps.check_debug.outputs.version || steps.check_branch.outputs.version }}
+
 
 runs:
   using: 'composite'
