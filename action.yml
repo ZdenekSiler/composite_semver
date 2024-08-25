@@ -71,8 +71,11 @@ runs:
         readJsonFile=$(cat version_content.txt)
         major=$(date +%y%m)
         minor=0
+
         if echo "$readJsonFile" | jq -e '.major' > /dev/null && [[ "$(echo "$readJsonFile" | jq -r '.major')" == "$major" ]]; then
-          minor=$(($(echo "$readJsonFile" | jq -r '.minor') + 1))
+          # Safely extract minor value, default to 0 if null or empty
+          extracted_minor=$(echo "$readJsonFile" | jq -r '.minor // 0')
+          minor=$(($extracted_minor + 1))
         fi
         echo "version=${major}.${minor}" >> $GITHUB_OUTPUT
 
@@ -86,7 +89,7 @@ runs:
         echo "$myJsonValue" > "$VERSION_CFG_JSON"
 
     - name: Upload Updated JSON Content
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: updated-version-content
         path: release_BL_pkg_version.json
