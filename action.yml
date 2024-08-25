@@ -34,6 +34,14 @@ runs:
           echo "version=2.0" >> $GITHUB_OUTPUT
           exit 0
         fi
+    - name: Check Version Config File
+      id: check_file
+      shell: bash
+      run: |
+        VERSION_CFG_JSON="release_BL_pkg_version.json"
+        if [[ ! -f "$VERSION_CFG_JSON" ]]; then
+          echo '{"major": "0", "minor": 0}' > "$VERSION_CFG_JSON"
+        fi
 
     - name: Read Version Config
       id: read_version
@@ -48,7 +56,6 @@ runs:
       with:
         name: version-content
         path: version_content.txt
-
     # - name: Download JSON Content
     #   uses: actions/download-artifact@v3
     #   with:
