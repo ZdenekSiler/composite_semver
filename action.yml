@@ -6,7 +6,7 @@ inputs:
     required: false
 
 outputs:
-  version:
+  version: step.check_debug.outputs.version
     description: 'The version of the BL package'
 
 runs:
