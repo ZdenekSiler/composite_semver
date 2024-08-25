@@ -33,6 +33,11 @@ runs:
           exit 0
         fi
 
+      - name: Print out the version
+        run: |
+          echo "Version: ${{ steps.check_branch.outputs.version }}"
+          echo "GITHUB_OUTPUT: $GITHUB_OUTPUT"
+
     # - name: Check Version Config File
     #   id: check_file
     #   shell: bash
