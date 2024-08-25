@@ -56,36 +56,37 @@ runs:
       with:
         name: version-content
         path: version_content.txt
-    # - name: Download JSON Content
-    #   uses: actions/download-artifact@v3
-    #   with:
-    #     name: version-content
-    #     path: .
 
-    # - name: Parse Version Config
-    #   id: parse_version
-    #   shell: bash
-    #   run: |
-    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
-    #     readJsonFile=$(cat version_content.txt)
-    #     major=$(date +%y%m)
-    #     minor=0
-    #     if echo "$readJsonFile" | jq -e '.major' > /dev/null && [[ "$(echo "$readJsonFile" | jq -r '.major')" == "$major" ]]; then
-    #       minor=$(($(echo "$readJsonFile" | jq -r '.minor') + 1))
-    #     fi
-    #     echo "version=${major}.${minor}" >> $GITHUB_OUTPUT
+    - name: Download JSON Content
+      uses: actions/download-artifact@v3
+      with:
+        name: version-content
+        path: .
 
-    # - name: Update Version Config
-    #   shell: bash
-    #   run: |
-    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
-    #     major=$(date +%y%m)
-    #     minor=$(echo "$readJsonFile" | jq -r '.minor')
-    #     myJsonValue="{\"major\": \"$major\", \"minor\": $minor}"
-    #     echo "$myJsonValue" > "$VERSION_CFG_JSON"
+    - name: Parse Version Config
+      id: parse_version
+      shell: bash
+      run: |
+        VERSION_CFG_JSON="release_BL_pkg_version.json"
+        readJsonFile=$(cat version_content.txt)
+        major=$(date +%y%m)
+        minor=0
+        if echo "$readJsonFile" | jq -e '.major' > /dev/null && [[ "$(echo "$readJsonFile" | jq -r '.major')" == "$major" ]]; then
+          minor=$(($(echo "$readJsonFile" | jq -r '.minor') + 1))
+        fi
+        echo "version=${major}.${minor}" >> $GITHUB_OUTPUT
 
-    # - name: Upload Updated JSON Content
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: updated-version-content
-    #     path: release_BL_pkg_version.json
+    - name: Update Version Config
+      shell: bash
+      run: |
+        VERSION_CFG_JSON="release_BL_pkg_version.json"
+        major=$(date +%y%m)
+        minor=$(echo "$readJsonFile" | jq -r '.minor')
+        myJsonValue="{\"major\": \"$major\", \"minor\": $minor}"
+        echo "$myJsonValue" > "$VERSION_CFG_JSON"
+
+    - name: Upload Updated JSON Content
+      uses: actions/upload-artifact@v3
+      with:
+        name: updated-version-content
+        path: release_BL_pkg_version.json
