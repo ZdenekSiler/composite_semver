@@ -35,34 +35,19 @@ runs:
           exit 0
         fi
 
-    - name: Print out the version
+    - name: Read Version Config
+      id: read_version
       shell: bash
       run: |
-        echo "Version: ${{ steps.check_branch.outputs.version }}"
-          
-    # - name: Check Version Config File
-    #   id: check_file
-    #   shell: bash
-    #   run: |
-    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
-    #     if [[ ! -f "$VERSION_CFG_JSON" ]]; then
-    #       echo "Error: Missing file $VERSION_CFG_JSON" >&2
-    #       exit 1
-    #     fi
+        VERSION_CFG_JSON="release_BL_pkg_version.json"
+        readJsonFile=$(cat "$VERSION_CFG_JSON")
+        echo "$readJsonFile" > version_content.txt
 
-    # - name: Read Version Config
-    #   id: read_version
-    #   shell: bash
-    #   run: |
-    #     VERSION_CFG_JSON="release_BL_pkg_version.json"
-    #     readJsonFile=$(cat "$VERSION_CFG_JSON")
-    #     echo "$readJsonFile" > version_content.txt
-
-    # - name: Upload JSON Content
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: version-content
-    #     path: version_content.txt
+    - name: Upload JSON Content
+      uses: actions/upload-artifact@v3
+      with:
+        name: version-content
+        path: version_content.txt
 
     # - name: Download JSON Content
     #   uses: actions/download-artifact@v3
